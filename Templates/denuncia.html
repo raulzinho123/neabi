@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Denúncia</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Registro de Denúncia</h2>
+        <form action="/registrar_denuncia" method="post">
+            <div class="form-group">
+                <label for="usuario_id">ID do Usuário:</label>
+                <input type="number" id="usuario_id" name="usuario_id" required>
+            </div>
+            <div class="form-group">
+                <label for="tipo_denuncia_id">Tipo de Denúncia:</label>
+                <select id="tipo_denuncia_id" name="tipo_denuncia_id" required>
+                    <option value="1">Tipo 1</option>
+                    <option value="2">Tipo 2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="status_denuncia_id">Status da Denúncia:</label>
+                <select id="status_denuncia_id" name="status_denuncia_id" required>
+                    <option value="1">Novo</option>
+                    <option value="2">Em andamento</option>
+                    <option value="3">Resolvido</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="denuncia">Descrição da Denúncia:</label>
+                <textarea id="denuncia" name="denuncia" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="data_denuncia">Data da Denúncia:</label>
+                <input type="date" id="data_denuncia" name="data_denuncia" required>
+            </div>
+            <button type="submit" class="submit-btn">Registrar Denúncia</button>
+        </form>
+    </div>
+</body>
+</html>
