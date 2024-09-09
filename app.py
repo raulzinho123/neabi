@@ -88,7 +88,7 @@ def login_usuario():
     else:
         return 'Matrícula ou senha inválidos.'
     
-
+#Rota para tela de denuncia
 @app.route('/denuncia')
 def denuncia_form():
     return render_template('denuncia.html')
@@ -113,6 +113,46 @@ def registrar_denuncia():
         return 'Denúncia registrada com sucesso!'
     except sqlite3.IntegrityError as e:
         return f'Erro: {e}'
+    finally:
+        db.close()
+
+#rota para tela de adm
+@app.route('/admin')
+def admin_page():
+    # Busca todas as denúncias do banco de dados
+    db = conexaodb()
+    cursor = db.cursor()
+
+    cursor.execute('''
+        SELECT d.id, u.nome, td.nome, sd.status, d.denuncia, d.data_denuncia
+        FROM denuncias d
+        JOIN usuarios u ON d.usuario_id = u.id
+        JOIN tipos_denuncias td ON d.tipo_denuncia_id = td.id
+        JOIN status_denuncias sd ON d.status_denuncia_id = sd.id
+    ''')
+
+    denuncias = cursor.fetchall()
+    db.close()
+    
+    return render_template('adm.html', denuncias=denuncias)
+
+@app.route('/atualizar_denuncia/<int:denuncia_id>', methods=['POST'])
+def atualizar_denuncia(denuncia_id):
+    novo_status_id = request.form['status_denuncia_id']
+    
+    db = conexaodb()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute('''
+            UPDATE denuncias
+            SET status_denuncia_id = ?
+            WHERE id = ?
+        ''', (novo_status_id, denuncia_id))
+        db.commit()
+        return redirect(url_for('admin_page'))
+    except sqlite3.Error as e:
+        return f'Erro ao atualizar denúncia: {e}'
     finally:
         db.close()
 
