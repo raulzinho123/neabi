@@ -4,6 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - Gerenciar Denúncias</title>
+    <style>
+        /* Adicione seu CSS aqui para estilizar a página */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .action-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            margin: 20px;
+        }
+    </style>
 </head>
 
 <body>
@@ -33,9 +66,9 @@
                     <td>
                         <form action="{{ url_for('atualizar_denuncia', denuncia_id=denuncia[0]) }}" method="post" style="display:inline;">
                             <select name="status_denuncia_id">
-                                <option value="1" {% if denuncia[3] == '1' %}selected{% endif %}>Pendente</option>
-                                <option value="2" {% if denuncia[3] == '2' %}selected{% endif %}>Em Andamento</option>
-                                <option value="3" {% if denuncia[3] == '3' %}selected{% endif %}>Concluído</option>
+                                <option value="1" {% if denuncia[3] == 'Pendente' %}selected{% endif %}>Pendente</option>
+                                <option value="2" {% if denuncia[3] == 'Em Andamento' %}selected{% endif %}>Em Andamento</option>
+                                <option value="3" {% if denuncia[3] == 'Concluído' %}selected{% endif %}>Concluído</option>
                             </select>
                             <button type="submit" class="action-btn">Atualizar Status</button>
                         </form>

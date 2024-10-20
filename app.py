@@ -23,12 +23,14 @@ def close_connection(exception):
 # Rota para a página inicial
 @app.route('/')
 def index():
-    return "Página inicial"
+    return render_template('index.html')
+
 
 # Rota para exibir o formulário de cadastro de usuário
 @app.route('/formcadastroU')
 def form_cadastro():
     return render_template('formcadastroU.html')
+
 
 # Rota para processar o cadastro de usuário
 @app.route('/cadastrar_usuario', methods=['POST'])
@@ -52,11 +54,13 @@ def cadastrar_usuario():
             VALUES (?, ?, ?, ?, ?)
         ''', (nome, matricula, telefone, senha_hash, tipo_usuario_id))
         db.commit()
-        return 'Usuário cadastrado com sucesso!'
+        # Redireciona o usuário para a página de denúncia após o cadastro
+        return redirect(url_for('denuncia_form'))
     except sqlite3.IntegrityError as e:
         return f'Erro: {e}'
     finally:
         db.close()
+
 
 # Rota para exibir o formulário de login
 @app.route('/loginU')
@@ -69,6 +73,7 @@ def login_usuario():
     matricula = request.form['matricula']
     senha = request.form['senha']
 
+    # Criptografando a senha recebida para comparação
     senha_hash = hashlib.sha256(senha.encode()).hexdigest()
 
     db = conexaodb()
@@ -84,9 +89,10 @@ def login_usuario():
     if user:
         # Usuário autenticado com sucesso
         session['user_id'] = user[0]  # Salva o ID do usuário na sessão
-        return 'Login bem-sucedido!'
+        return redirect(url_for('denuncia_form'))  # Redireciona para a página de denúncias
     else:
         return 'Matrícula ou senha inválidos.'
+
     
 #Rota para tela de denuncia
 @app.route('/denuncia')
@@ -155,6 +161,7 @@ def atualizar_denuncia(denuncia_id):
         return f'Erro ao atualizar denúncia: {e}'
     finally:
         db.close()
+
 
 
 if __name__ == "__main__":
