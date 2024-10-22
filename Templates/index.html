@@ -18,16 +18,17 @@
         <div class="top-banner">
             @NEABIIFCM
         </div>
+        
         <nav>
             <div class="logo"><img src="img/logo.png" alt=""></div>
             <ul>
                 <li><a href="#sobre">SOBRE O NEABI</a></li>
                 <li><a href="#noticias">NOTÍCIAS</a></li>
                 <li><a href="#cartilha">CARTILHA</a></li>
-                <li><a href="#">DENÚNCIAS</a></li>
+                <li><a href="{{ url_for('login_form') }}">DENÚNCIAS</a></li> 
             </ul>
-        
         </nav>
+        
     </header>
     <main>
         <section class="hero">

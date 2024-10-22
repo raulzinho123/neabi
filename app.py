@@ -40,9 +40,9 @@ def cadastrar_usuario():
     telefone = request.form['telefone']
     email = request.form['email']
     senha = request.form['senha']
-    tipo_usuario_id = request.form['tipo_usuario_id']
+    tipo_usuario_id = request.form['tipo_usuario_id'] 
 
-    # criptografia da senha usando SHA-256
+    # Criptografando a senha
     senha_hash = hashlib.sha256(senha.encode()).hexdigest()
 
     db = conexaodb()
@@ -54,12 +54,17 @@ def cadastrar_usuario():
             VALUES (?, ?, ?, ?, ?)
         ''', (nome, matricula, telefone, senha_hash, tipo_usuario_id))
         db.commit()
-        # Redireciona o usuário para a página de denúncia após o cadastro
-        return redirect(url_for('denuncia_form'))
+
+        # Verifica se o tipo de usuário é 'Administrador' (tipo_usuario_id == 1)
+        if tipo_usuario_id == '1':  
+            return redirect(url_for('admin_page'))  # Redireciona para a página de administração
+        else:
+            return redirect(url_for('denuncia_form'))  # Caso contrário, redireciona para a página de denúncias
     except sqlite3.IntegrityError as e:
         return f'Erro: {e}'
     finally:
         db.close()
+
 
 
 # Rota para exibir o formulário de login
@@ -78,7 +83,8 @@ def login_usuario():
 
     db = conexaodb()
     cursor = db.cursor()
-    
+
+    # Verifica se a matrícula e senha correspondem a um usuário no banco de dados
     cursor.execute('''
         SELECT * FROM usuarios WHERE matricula = ? AND senha_hash = ?
     ''', (matricula, senha_hash))
@@ -87,11 +93,17 @@ def login_usuario():
     db.close()
     
     if user:
-        # Usuário autenticado com sucesso
-        session['user_id'] = user[0]  # Salva o ID do usuário na sessão
-        return redirect(url_for('denuncia_form'))  # Redireciona para a página de denúncias
+        session['user_id'] = user[0]  #
+        tipo_usuario_id = user[5]  
+
+       
+        if tipo_usuario_id == 1:
+            return redirect(url_for('admin_page')) 
+        else:
+            return redirect(url_for('denuncia_form')) 
     else:
         return 'Matrícula ou senha inválidos.'
+
 
     
 #Rota para tela de denuncia
@@ -99,17 +111,19 @@ def login_usuario():
 def denuncia_form():
     return render_template('denuncia.html')
 
+#registrando denuncia
 @app.route('/registrar_denuncia', methods=['POST'])
 def registrar_denuncia():
     usuario_id = request.form['usuario_id']
     tipo_denuncia_id = request.form['tipo_denuncia_id']
-    status_denuncia_id = request.form['status_denuncia_id']
     denuncia = request.form['denuncia']
     data_denuncia = request.form['data_denuncia']
 
+    status_denuncia_id = 1  
+
     db = conexaodb()
     cursor = db.cursor()
-    
+
     try:
         cursor.execute('''
             INSERT INTO denuncias (usuario_id, tipo_denuncia_id, status_denuncia_id, denuncia, data_denuncia)
@@ -122,10 +136,37 @@ def registrar_denuncia():
     finally:
         db.close()
 
+
+
+#rota para tela de denuncias feitas
+@app.route('/minhas_denuncias')
+def minhas_denuncias():
+    if 'user_id' not in session:
+        return redirect(url_for('login_form'))  # Redireciona para login se o usuário não estiver logado
+
+    usuario_id = session['user_id']  # ID do usuário logado
+    db = conexaodb()
+    cursor = db.cursor()
+
+    # Recupera todas as denúncias feitas pelo usuário logado
+    cursor.execute('''
+        SELECT d.id, td.nome, sd.status, d.denuncia, d.data_denuncia
+        FROM denuncias d
+        JOIN tipos_denuncias td ON d.tipo_denuncia_id = td.id
+        JOIN status_denuncias sd ON d.status_denuncia_id = sd.id
+        WHERE d.usuario_id = ?
+    ''', (usuario_id,))
+
+    denuncias = cursor.fetchall()
+    db.close()
+
+    # Renderiza a página de visualização das denúncias do usuário
+    return render_template('minhas_denuncias.html', denuncias=denuncias)
+
+
 #rota para tela de adm
 @app.route('/admin')
 def admin_page():
-    # Busca todas as denúncias do banco de dados
     db = conexaodb()
     cursor = db.cursor()
 
@@ -136,11 +177,16 @@ def admin_page():
         JOIN tipos_denuncias td ON d.tipo_denuncia_id = td.id
         JOIN status_denuncias sd ON d.status_denuncia_id = sd.id
     ''')
-
+    
     denuncias = cursor.fetchall()
     db.close()
-    
+
+    # Exibir no console o conteúdo de denuncias para verificar
+    print(denuncias)
+
     return render_template('adm.html', denuncias=denuncias)
+
+
 
 @app.route('/atualizar_denuncia/<int:denuncia_id>', methods=['POST'])
 def atualizar_denuncia(denuncia_id):
