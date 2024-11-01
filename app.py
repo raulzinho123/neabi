@@ -177,15 +177,13 @@ def admin_page():
         JOIN tipos_denuncias td ON d.tipo_denuncia_id = td.id
         JOIN status_denuncias sd ON d.status_denuncia_id = sd.id
     ''')
-    
+
+
     denuncias = cursor.fetchall()
     db.close()
 
-    # Exibir no console o conteúdo de denuncias para verificar
-    print(denuncias)
 
     return render_template('adm.html', denuncias=denuncias)
-
 
 
 @app.route('/atualizar_denuncia/<int:denuncia_id>', methods=['POST'])
