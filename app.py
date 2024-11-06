@@ -114,17 +114,20 @@ def denuncia_form():
 #registrando denuncia
 @app.route('/registrar_denuncia', methods=['POST'])
 def registrar_denuncia():
-    usuario_id = request.form['usuario_id']
+    if 'user_id' not in session:
+        return redirect(url_for('login_form'))  # Redireciona para o login se não estiver logado
+
+    usuario_id = session['user_id']  # Obtém o ID do usuário logado diretamente da sessão
     tipo_denuncia_id = request.form['tipo_denuncia_id']
     denuncia = request.form['denuncia']
     data_denuncia = request.form['data_denuncia']
-
-    status_denuncia_id = 1  
+    status_denuncia_id = 1  # Status inicial da denúncia como 'Pendente'
 
     db = conexaodb()
     cursor = db.cursor()
 
     try:
+        # Insere a nova denúncia no banco de dados usando o ID do usuário logado
         cursor.execute('''
             INSERT INTO denuncias (usuario_id, tipo_denuncia_id, status_denuncia_id, denuncia, data_denuncia)
             VALUES (?, ?, ?, ?, ?)
@@ -138,17 +141,17 @@ def registrar_denuncia():
 
 
 
+
 #rota para tela de denuncias feitas
 @app.route('/minhas_denuncias')
 def minhas_denuncias():
     if 'user_id' not in session:
-        return redirect(url_for('login_form'))  # Redireciona para login se o usuário não estiver logado
+        return redirect(url_for('login_form'))  
 
-    usuario_id = session['user_id']  # ID do usuário logado
+    usuario_id = session['user_id']  
     db = conexaodb()
     cursor = db.cursor()
 
-    # Recupera todas as denúncias feitas pelo usuário logado
     cursor.execute('''
         SELECT d.id, td.nome, sd.status, d.denuncia, d.data_denuncia
         FROM denuncias d
@@ -160,7 +163,6 @@ def minhas_denuncias():
     denuncias = cursor.fetchall()
     db.close()
 
-    # Renderiza a página de visualização das denúncias do usuário
     return render_template('minhas_denuncias.html', denuncias=denuncias)
 
 

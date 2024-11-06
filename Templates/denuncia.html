@@ -9,29 +9,24 @@
 <body>
     <div class="container">
         <h2>Registro de Denúncia</h2>
-        <form action="/registrar_denuncia" method="post">
-            <div class="form-group">
-                <label for="usuario_id">ID do Usuário:</label>
-                <input type="number" id="usuario_id" name="usuario_id" required>
-            </div>
+        <form action="{{ url_for('registrar_denuncia') }}" method="POST">
+            <!-- Campo de nome opcional -->
+            <label for="nome">Nome (opcional):</label>
+            <input type="text" id="nome" name="nome">
             
+            <!-- Outros campos do formulário -->
             <label for="tipo_denuncia_id">Tipo de Denúncia:</label>
-            <select name="tipo_denuncia_id" required>
-                <option value="1">Racismo</option>
-                <option value="2">Discriminação</option>
-                <option value="3">Outros</option>
-            </select>
+            <input type="text" id="tipo_denuncia_id" name="tipo_denuncia_id" required>
             
-            <div class="form-group">
-                <label for="denuncia">Descrição da Denúncia:</label>
-                <textarea id="denuncia" name="denuncia" rows="4" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="data_denuncia">Data da Denúncia:</label>
-                <input type="date" id="data_denuncia" name="data_denuncia" required>
-            </div>
-            <button type="submit" class="submit-btn">Registrar Denúncia</button>
+            <label for="denuncia">Denúncia:</label>
+            <textarea id="denuncia" name="denuncia" required></textarea>
+        
+            <label for="data_denuncia">Data:</label>
+            <input type="date" id="data_denuncia" name="data_denuncia" required>
+        
+            <button type="submit">Registrar Denúncia</button>
         </form>
+        
         <a href="{{ url_for('minhas_denuncias') }}" class="view-link">Ver andamento das minhas denúncias</a>
     </div>
 </body>
