@@ -103,6 +103,17 @@ def login_usuario():
             return redirect(url_for('denuncia_form')) 
     else:
         return 'Matrícula ou senha inválidos.'
+    
+
+
+# Rota para logout
+@app.route('/logout')
+def logout():
+    # Encerra a sessão do usuário
+    session.pop('user_id', None)
+    # Redireciona para a página inicial
+    return redirect(url_for('index'))
+
 
 
     
@@ -133,7 +144,11 @@ def registrar_denuncia():
             VALUES (?, ?, ?, ?, ?)
         ''', (usuario_id, tipo_denuncia_id, status_denuncia_id, denuncia, data_denuncia))
         db.commit()
-        return 'Denúncia registrada com sucesso!'
+        return '''
+            <p>Denúncia registrada com sucesso!</p>
+            <a href="/denuncia">Voltar para a página de denúncia</a>
+            <a href="/">Ir para a página inicial</a>
+        '''
     except sqlite3.IntegrityError as e:
         return f'Erro: {e}'
     finally:
