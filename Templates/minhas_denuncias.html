@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Denúncias</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="minhasdenuncias.css">
 </head>
 <body>
     <div class="container">
@@ -31,7 +31,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{{ url_for('denuncia_form') }}">Voltar para página de denúncia</a>
+        <a class="voltar-btn" href="{{ url_for('denuncia_form') }}">Voltar para página de denúncia</a>
     </div>
 </body>
 </html>
